@@ -4,9 +4,9 @@ import java.util.Scanner;
 
 public class ModuloAndTimeDifference {
 
-    private static final int DAY = 1 * 24 * 60 * 60;
-    private static final int HOUR = 1 * 60 * 60;
-    private static final int MINUTE = 1 * 60;
+    private static final int DAY = 24 * 60 * 60;
+    private static final int HOUR = 60 * 60;
+    private static final int MINUTE = 60;
 
 
     public static void main(String[] args) {

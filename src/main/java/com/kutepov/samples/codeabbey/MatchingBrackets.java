@@ -41,7 +41,6 @@ public class MatchingBrackets {
     }
 
     private static boolean updateContext(char ch) {
-        BracketContext current = stack.peek();
         switch (ch) {
             case '(':
                 stack.push(BracketContext.ROUND);

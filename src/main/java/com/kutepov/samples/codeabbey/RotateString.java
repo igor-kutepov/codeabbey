@@ -35,7 +35,7 @@ public class RotateString {
     }
 
 
-    public static void reverse(char[] chars, int from, int length) {
+    private static void reverse(char[] chars, int from, int length) {
         for (int i = 0; i < length / 2; i++) {
             char temp = chars[from + i];
             chars[from + i] = chars[from + length - 1 - i];

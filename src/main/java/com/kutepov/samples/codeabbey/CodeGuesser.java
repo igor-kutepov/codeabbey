@@ -6,6 +6,7 @@ import java.util.Scanner;
 public class CodeGuesser {
 
     private static final int DIGITS = 4;
+    private static final int EMPTY_DIGIT = -1;
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
@@ -26,18 +27,53 @@ public class CodeGuesser {
         }
 
         int[] digits = new int[DIGITS]; //holds correct digits
-        Arrays.fill(digits, -1);
+        Arrays.fill(digits, EMPTY_DIGIT);
+        //holds already used digits for each digit position in the number
+        boolean[][] usedDigits = new boolean[DIGITS][10];
+
+        //sets non-significant digits as -1 and save them in usedDigits
+        for (int i = 0; i < DIGITS; i++) {
+            for (int j = 0; j < guesses; j++) {
+                if (guessed[j] == 0) {
+                    int value = matrix[i][j];
+                    if (value >= 0) {
+                        for (int k = 0; k < guesses; k++) {
+                            if (value == matrix[i][k] && k != j) {
+                                matrix[i][j] = matrix[i][k] = EMPTY_DIGIT;
+                            }
+                        }
+
+                        matrix[i][j] = EMPTY_DIGIT;
+                        usedDigits[i][value] = true;
+                    }
+                }
+            }
+        }
 
         int found = 0; //counter of found digits
         do {
-            for (int i = 0; i < DIGITS; i++) {
-                for (int j = 0; j < guesses; j++) {
-                    if (guessed[j] == 0) {
-                        int value = matrix[i][j];
-                        if (value > 0) {
-                            for (int k = 0; k < guesses; k++) {
-                                if (value == matrix[i][k] && k != j) {
-                                    matrix[i][j] = matrix[i][k] = -1;
+            //if number guessed digits equals number of nonempty digits then desired digits was found
+            for (int i = 0; i < guesses; i++) {
+                if (guessed[i] > 0) {
+                    int foundDigits = 0;
+                    for (int j = 0; j < DIGITS; j++) {
+                        if (matrix[j][i] != EMPTY_DIGIT) {
+                            foundDigits++;
+                        }
+                    }
+
+                    if (foundDigits == guessed[i]) {
+                        for (int j = 0; j < DIGITS; j++) {
+                            int value = matrix[j][i];
+                            if (value != EMPTY_DIGIT) {
+                                digits[j] = value;
+                                found++;
+                                //cleanup all digits with same value and position in numbers
+                                for (int k = 0; k < guesses; k++) {
+                                    if (matrix[j][k] == value && guessed[k] > 0) {
+                                        guessed[k]--;
+                                    }
+                                    matrix[j][k] = EMPTY_DIGIT;
                                 }
                             }
                         }
@@ -45,53 +81,24 @@ public class CodeGuesser {
                 }
             }
 
+            //use substitution of not yet used digits on empty the number positions
             for (int i = 0; i < DIGITS; i++) {
                 if (digits[i] < 0) { //digit not yet found
-                    if ((DIGITS - found) == 1) { //last digit remained
-                        for (int j = 0; j < guesses; j++) {
-                            if (guessed[j] > 0) {
-                                digits[i] = matrix[i][j];
-
-                                guessed[j]--;
-                                found++;
+                    int digit = EMPTY_DIGIT;
+                    for (int j = 0; j < usedDigits[i].length; j++) {
+                        if (!usedDigits[i][j]) {
+                            if (digit == EMPTY_DIGIT) {
+                                digit = j;
+                            } else {    //skip if more than one not used digits
+                                digit = EMPTY_DIGIT;
                                 break;
                             }
                         }
-                    } else {
-                        int[] pair = new int[2];
-                        if (findPair(matrix[i], guessed, pair)) {
-                            //use digit from first index of pair
-                            int digit = matrix[i][pair[0]];
-
-                            boolean single = false;
-                            for (int j = 0; j < DIGITS; j++) {
-//                                product * = matrix[j][pair[0]]
-                            }
-
-                            //checking digit that it has no duplicates among not guessed numbers
-                            for (int j = 0; j < guesses; j++) {
-//                                if (j != pair[0] && digit == matrix[i][j] && guessed[j] <= 0) {
-//                                    //cleanup this pair
-//                                    matrix[i][pair[0]] = -1;
-//                                    matrix[i][pair[1]] = -1;
-//                                    digit = -1;
-//                                    break;
-//                                } else
-                                if (j != pair[0] && j != pair[1] && guessed[j] > 0 && digit == matrix[i][j]) {
-                                    digit = -1;
-                                    break;
-                                }
-                            }
-
-                            if (digit >= 0) {
-                                digits[i] = digit;
-                                guessed[pair[0]]--;
-                                guessed[pair[1]]--;
-                                found++;
-                            }
-                        }
                     }
-
+                    if (digit != EMPTY_DIGIT) {
+                        digits[i] = digit;
+                        found++;
+                    }
                 }
             }
 
@@ -101,26 +108,5 @@ public class CodeGuesser {
             System.out.print(digit);
     }
 
-    private static boolean findPair(int[] array, int[] guessed, int[] pair) {
-        boolean[] duplicates = new boolean[10];
-        for (int i = 0; i < array.length; i++) {
-            if (guessed[i] <= 0 || array[i] < 0)
-                continue;
-            if (!(duplicates[array[i]] ^= true)) {
-                //found duplicate and remember second index to pair
-                pair[1] = i;
-                int duplicateDigit = array[i];
-                //search previous entry the digit
-                for (int j = i - 1; j >= 0; j--) {
-                    if (array[j] == duplicateDigit) {
-                        pair[0] = j;
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
 
 }

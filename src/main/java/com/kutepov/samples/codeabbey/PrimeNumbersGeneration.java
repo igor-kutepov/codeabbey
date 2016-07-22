@@ -5,26 +5,31 @@ import java.util.Scanner;
 
 public class PrimeNumbersGeneration {
 
-    private static final int SEGMENT_SIZE = 30000;
-
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 
         int size = input.nextInt();
 
-        int max = Integer.MAX_VALUE;
-        int n = (int) Math.sqrt(max);
-        int m = n + 1;
+        int[] indexes = new int[size], original = new int[size];
+        for (int i = 0; i < size; i++) {
+            original[i] = indexes[i] = input.nextInt();
+        }
+        Arrays.sort(indexes);
 
-        boolean[] isPrime = new boolean[n];
-        int[] primes = new int[200_000];
+        //find approximate limit for number for the greatest index (means all needed primes
+        //will be found in [0..upperBoundary]
+        int maxIndex = indexes[size - 1];
+        int upperBoundary = (int) Math.ceil(maxIndex >= 6 ? maxIndex * Math.log(maxIndex) + maxIndex * Math.log(Math.log(maxIndex)) : 12);
+
+        boolean[] isPrime = new boolean[upperBoundary];
+        int[] primes = new int[maxIndex];
 
         Arrays.fill(isPrime, true);
         isPrime[0] = false;
         isPrime[1] = false;
-        for (int i = 2; i * i < n; i++) {
+        for (int i = 2; i * i < upperBoundary; i++) {
             if (isPrime[i])
-                for (int j = i * i; j < n; j += i)
+                for (int j = i * i; j < upperBoundary; j += i)
                     isPrime[j] = false;
         }
 
@@ -33,33 +38,13 @@ public class PrimeNumbersGeneration {
             if (isPrime[i]) {
                 primes[count] = i;
                 count++;
+                if (count >= maxIndex)
+                    break;
             }
         }
 
-
-        boolean[] segment = new boolean[SEGMENT_SIZE]; // вторичное решето
-        for (int i = m - 1; i < max; i += SEGMENT_SIZE) {
-            Arrays.fill(segment, true);
-            for (int k = 0; k < count; i++) {
-                int h = i % primes[k];
-                int j = h > 0 ? primes[k] - h : 0;
-                for (; j < SEGMENT_SIZE; j += primes[k])
-                    segment[j] = false;
-            }
-            for (int k = 0; k < SEGMENT_SIZE; k++) {
-                if (segment[k] && (k + i < max)) {
-                    primes[count] = k + i;
-                    count++;
-//                    System.out.println(k + i); // выводим простое число на экран
-                }
-            }
-        }
-
-
-        for (; size > 0; size--) {
-            int index = input.nextInt();
-
-
+        for (int index : original) {
+            System.out.print(primes[index - 1] + " ");
         }
     }
 }

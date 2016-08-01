@@ -61,7 +61,7 @@ public class DijkstraInTheNetwork {
     }
 
     private static void dijkstra(List<Pair<Integer, Integer>>[] graph, int source) {
-        Map<Integer, List<Pair<Integer, Integer>>> q = new HashMap<>();
+        Map<Integer, List<Pair<Integer, Integer>>> q = new HashMap<>(graph.length);
         int[] dist = new int[graph.length];
 
         for (int i = 0; i < graph.length; i++) {

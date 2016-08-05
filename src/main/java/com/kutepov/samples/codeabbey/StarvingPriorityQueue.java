@@ -14,12 +14,7 @@ public class StarvingPriorityQueue {
         int ticks = visitors * 2;
         rand = input.nextInt();
 
-        PriorityQueue<Visitor> queue = new PriorityQueue<>(visitors / 2 + 1, (o1, o2) -> {
-            if (o1.starvation == o2.starvation)
-                return 0;
-            else
-                return -(o1.starvation - o2.starvation);
-        });
+        PriorityQueue<Visitor> queue = new PriorityQueue<>(visitors / 2 + 1, (o1, o2) -> -(o1.starvation - o2.starvation));
 
         long discomfort = 0;
         for (int i = 0; i <= ticks; i++) {

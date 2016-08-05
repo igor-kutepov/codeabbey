@@ -31,13 +31,13 @@ public class BinaryHeap {
                 }
             } else {    //poll value from head
                 int current = 0, pointer = 0;
-                boolean changed = false;
 
                 //move last element to 0 position and decrease heap
                 heap[current] = heap[heapSize - 1];
                 heap[heapSize - 1] = 0;
                 heapSize--;
 
+                boolean changed;
                 do {
                     int left = current * 2 + 1;
                     if (left < heapSize && heap[left] < heap[pointer])

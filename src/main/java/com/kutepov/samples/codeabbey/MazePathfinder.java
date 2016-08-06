@@ -128,18 +128,6 @@ public class MazePathfinder {
         return sb.toString();
     }
 
-    private static String printMap(int[][] map) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < map.length; i++) {
-            for (int j = 0; j < map[i].length; j++) {
-                int index = j + i * map[i].length;
-                sb.append(graph[index] != null ? graph[index].value : 0).append('\t');
-            }
-            sb.append('\n');
-        }
-
-        return sb.toString();
-    }
 
     private static void sendWave(int vertex) {
         if (used[vertex])
